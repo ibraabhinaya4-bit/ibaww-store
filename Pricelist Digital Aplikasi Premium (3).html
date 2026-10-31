@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricelist Digital Aplikasi Premium</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#d7aa4e',
+                            500: '#c59b27',
+                            600: '#a37c1d',
+                        },
+                        purple: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        },
+                        dark: {
+                            900: '#07070a',
+                            800: '#111116',
+                            700: '#1b1b22',
+                            600: '#272732',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Outfit', 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(17, 17, 22, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+        .purple-glow {
+            box-shadow: 0 0 40px -10px rgba(124, 58, 237, 0.25);
+        }
+        .purple-gradient {
+            background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #5b21b6 100%);
+        }
+        .gold-purple-gradient {
+            background: linear-gradient(135deg, #f5ebd3 0%, #d7aa4e 40%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #07070a; }
+        ::-webkit-scrollbar-thumb { background: #272732; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="flex-1 flex flex-col">
+        <!-- Rendered dynamically -->
+    </div>
+
+    <!-- MODAL CONTAINER -->
+    <div id="modal-container" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm"></div>
+
+    <!-- SCRIPT APPLICATION LOGIC -->
+    <script>
+        // --- INITIAL DATA & STORAGE SETUP ---
+        const DEFAULT_STORE = {
+            name: "LuxeApp Store",
+            tagline: "Katalog Pricelist Aplikasi & Layanan Premium Terlengkap",
+            whatsapp: "6281234567890",
+            logo: "👑",
+            lastUpdated: new Date().toISOString()
+        };
+
+        const DEFAULT_APPS = [
+            {
+                id: "netflix",
+                name: "Netflix Premium",
+                category: "Streaming",
+                logo: "🎬",
+                iconBg: "from-red-600 to-black",
+                badge: "BEST SELLER",
+                description: "Akun Netflix Premium UHD 4 Layar kualitas jernih anti hold, garansi full.",
+                isActive: true,
+                order: 1,
+                packages: [
+                    { id: "nf-1", name: "1 Hari (1 User)", price: 5500, originalPrice: 15000, desc: "Akses 1 hari, login 1 device." },
+                    { id: "nf-3", name: "3 Hari (1 User)", price: 8500, originalPrice: 25000, desc: "Akses 3 hari, stabil & lancar." },
+                    { id: "nf-7", name: "7 Hari (1 User)", price: 12200, originalPrice: 35000, desc: "Akses 1 minggu penuh." },
+                    { id: "nf-30", name: "1 Bulan (Sharing 2P)", price: 35000, originalPrice: 65000, desc: "Profil aman, anti rebutan." },
+                    { id: "nf-full", name: "1 Bulan (Private Profile)", price: 55000, originalPrice: 186000, desc: "Full private pakai PIN sendiri." }
+                ]
+            },
+            {
+                id: "canva",
+                name: "Canva Pro Team",
+                category: "Design Tools",
+                logo: "🎨",
+                iconBg: "from-blue-600 to-indigo-800",
+                badge: "PROMO",
+                description: "Akses fitur pro seumur hidup via invite link resmi tim, ribuan template premium.",
+                isActive: true,
+                order: 2,
+                packages: [
+                    { id: "cv-1m", name: "Canva Pro 1 Bulan", price: 15000, originalPrice: 50000, desc: "Garansi 1 bulan full." },
+                    { id: "cv-1y", name: "Canva Pro 1 Tahun", price: 35000, originalPrice: 150000, desc: "Akses tim resmi 1 tahun." },
+                    { id: "cv-life", name: "Canva Pro Lifetime", price: 75000, originalPrice: 300000, desc: "Garansi lifetime anti ngadat." }
+                ]
+            },
+            {
+                id: "spotify",
+                name: "Spotify Premium",
+                category: "Music & Audio",
+                logo: "🎵",
+                iconBg: "from-emerald-600 to-green-900",
+                badge: "POPULAR",
+                description: "Spotify Individual Premium invite email pribadi. Bebas iklan & bebas download.",
+                isActive: true,
+                order: 3,
+                packages: [
+                    { id: "sp-1m", name: "1 Bulan Individual", price: 25000, originalPrice: 54990, desc: "Invite email pribadi." },
+                    { id: "sp-3m", name: "3 Bulan Individual", price: 65000, originalPrice: 160000, desc: "Lebih hemat 3 bulan." }
+                ]
+            },
+            {
+                id: "youtube",
+                name: "YouTube Premium",
+                category: "Streaming",
+                logo: "▶️",
+                iconBg: "from-red-700 to-rose-900",
+                badge: "BEST SELLER",
+                description: "Nonton YouTube tanpa iklan sepuasnya + Free YouTube Music.",
+                isActive: true,
+                order: 4,
+                packages: [
+                    { id: "yt-1m", name: "1 Bulan (Famplan)", price: 12000, originalPrice: 59000, desc: "Legal via invite keluarga." },
+                    { id: "yt-4m", name: "4 Bulan (Famplan)", price: 30000, originalPrice: 238000, desc: "Hemat 4 bulan full garansi." }
+                ]
+            },
+            {
+                id: "chatgpt",
+                name: "ChatGPT Plus AI",
+                category: "AI & Productivity",
+                logo: "🤖",
+                iconBg: "from-teal-600 to-cyan-900",
+                badge: "NEW",
+                description: "Akses GPT-4o, DALL-E 3, dan analisis data canggih kecepatan tinggi.",
+                isActive: true,
+                order: 5,
+                packages: [
+                    { id: "ai-shar", name: "1 Bulan (Shared Account)", price: 90000, originalPrice: 300000, desc: "Login bergantian stabil." },
+                    { id: "ai-priv", name: "1 Bulan (Private Account)", price: 220000, originalPrice: 350000, desc: "Akun baru privat utuh." }
+                ]
+            },
+            {
+                id: "capcut",
+                name: "CapCut Pro",
+                category: "Video Editor",
+                logo: "✂️",
+                iconBg: "from-slate-700 to-zinc-900",
+                badge: "",
+                description: "Buka semua efek, template pro, dan transisi eksklusif CapCut.",
+                isActive: true,
+                order: 6,
+                packages: [
+                    { id: "cc-1m", name: "CapCut Pro 1 Bulan", price: 20000, originalPrice: 80000, desc: "Login device siap pakai." },
+                    { id: "cc-1y", name: "CapCut Pro 1 Tahun", price: 95000, originalPrice: 350000, desc: "Full 1 tahun garansi." }
+                ]
+            },
+            {
+                id: "viu",
+                name: "Viu Premium",
+                category: "Streaming",
+                logo: "🍿",
+                iconBg: "from-yellow-600 to-amber-900",
+                badge: "",
+                description: "Nonton drakor dan anime sepuasnya tanpa iklan, kualitas HD.",
+                isActive: true,
+                order: 7,
+                packages: [
+                    { id: "viu-1m", name: "Viu 1 Bulan", price: 10000, originalPrice: 33000, desc: "Legal & resmi." },
+                    { id: "viu-1y", name: "Viu 1 Tahun", price: 60000, originalPrice: 200000, desc: "Hemat setahun." }
+                ]
+            },
+            {
+                id: "telegram",
+                name: "Telegram Premium",
+                category: "Social Media",
+                logo: "✈️",
+                iconBg: "from-sky-600 to-blue-900",
+                badge: "POPULAR",
+                description: "Upload file besar 4GB, kecepatan download maksimal, stiker eksklusif.",
+                isActive: true,
+                order: 8,
+                packages: [
+                    { id: "tg-1m", name: "Telegram 1 Bulan", price: 45000, originalPrice: 79000, desc: "Gift resmi via username." },
+                    { id: "tg-1y", name: "Telegram 1 Tahun", price: 320000, originalPrice: 450000, desc: "Lebih hemat setahun." }
+                ]
+            }
+        ];
+
+        // Storage helpers
+        function getStoreData() {
+            const data = localStorage.getItem('luxe_store_v2');
+            return data ? JSON.parse(data) : DEFAULT_STORE;
+        }
+        function saveStoreData(data) {
+            data.lastUpdated = new Date().toISOString();
+            localStorage.setItem('luxe_store_v2', JSON.stringify(data));
+        }
+
+        function getAppsData() {
+            const data = localStorage.getItem('luxe_apps_v2');
+            return data ? JSON.parse(data) : DEFAULT_APPS;
+        }
+        function saveAppsData(apps) {
+            localStorage.setItem('luxe_apps_v2', JSON.stringify(apps));
+        }
+
+        // App State
+        let currentRoute = { view: 'home', appId: null }; // views: 'home', 'detail', 'admin-login', 'admin-dashboard'
+        let searchQuery = '';
+        let selectedCategory = 'Semua';
+        let isAdminLoggedIn = localStorage.getItem('luxe_admin_auth') === 'true';
+        let adminTab = 'apps'; // 'apps', 'settings'
+
+        // Utils
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+        }
+        function formatDate(iso) {
+            return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            const bg = type === 'success' ? 'bg-purple-600 text-white border-purple-400' : 'bg-red-600 text-white border-red-500';
+            el.className = `${bg} px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 font-medium text-sm border pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300`;
+            el.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle-2' : 'alert-circle'}" class="w-5 h-5 shrink-0"></i><span>${msg}</span>`;
+            container.appendChild(el);
+            lucide.createIcons();
+            setTimeout(() => el.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                el.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        // Router
+        function navigate(view, appId = null) {
+            currentRoute = { view, appId };
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            render();
+        }
+
+        function render() {
+            const root = document.getElementById('app');
+            root.innerHTML = '';
+
+            if (currentRoute.view === 'home') {
+                root.innerHTML = renderHomeView();
+            } else if (currentRoute.view === 'detail') {
+                root.innerHTML = renderDetailView(currentRoute.appId);
+            } else if (currentRoute.view === 'admin-login') {
+                root.innerHTML = renderAdminLoginView();
+            } else if (currentRoute.view === 'admin-dashboard') {
+                if (!isAdminLoggedIn) {
+                    navigate('admin-login');
+                    return;
+                }
+                root.innerHTML = renderAdminDashboardView();
+            }
+            lucide.createIcons();
+        }
+
+        // --- 1. HOME VIEW (Katalog & Kategori) ---
+        function renderHomeView() {
+            const store = getStoreData();
+            let apps = getAppsData().filter(a => a.isActive);
+
+            // Extract categories
+            const categories = ['Semua', ...new Set(apps.map(a => a.category))];
+
+            // Filter by category
+            if (selectedCategory !== 'Semua') {
+                apps = apps.filter(a => a.category === selectedCategory);
+            }
+
+            // Filter by search
+            if (searchQuery.trim() !== '') {
+                const q = searchQuery.toLowerCase();
+                apps = apps.filter(a => a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q));
+            }
+
+            apps.sort((a, b) => a.order - b.order);
+
+            return `
+                <!-- Navbar -->
+                <header class="sticky top-0 z-40 bg-dark-900/90 backdrop-blur-md border-b border-dark-700">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                        <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('home')">
+                            <div class="w-12 h-12 rounded-2xl purple-gradient flex items-center justify-center text-2xl shadow-lg shadow-purple-600/20">
+                                ${store.logo || '👑'}
+                            </div>
+                            <div>
+                                <h1 class="font-bold text-lg sm:text-xl tracking-tight text-white flex items-center gap-2">
+                                    ${store.name}
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">PREMIUM</span>
+                                </h1>
+                                <p class="text-xs text-gray-400 hidden sm:block">${store.tagline}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <button onclick="openContactModal()" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-gray-300 hover:text-white border border-dark-600 text-sm font-medium transition-all">
+                                <i data-lucide="info" class="w-4 h-4 text-purple-400"></i> Kontak Admin
+                            </button>
+                            <button onclick="navigate('admin-login')" class="flex items-center gap-2 px-4 py-2 rounded-xl purple-gradient text-white font-semibold text-sm transition-all shadow-lg shadow-purple-600/20 hover:opacity-95">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i> Admin Login
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Hero Section -->
+                <section class="relative overflow-hidden py-14 lg:py-20 border-b border-dark-700 bg-gradient-to-b from-dark-800/80 to-dark-900">
+                    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+                    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
+                        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/30 mb-4">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> PRICELIST PREMIUM APPS & LAYANAN DIGITAL
+                        </span>
+                        <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
+                            Pusat Langganan Aplikasi <span class="gold-purple-gradient">Legal & Termurah</span>
+                        </h2>
+                        <p class="text-gray-400 max-w-xl mx-auto text-sm sm:text-base mb-8">
+                            Pilih aplikasi digital favorit Anda di bawah ini untuk melihat daftar paket harga lengkap dan pesan langsung via WhatsApp.
+                        </p>
+
+                        <!-- Search Bar -->
+                        <div class="max-w-xl mx-auto relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                <i data-lucide="search" class="w-5 h-5 text-purple-400"></i>
+                            </div>
+                            <input type="text" id="search-input" value="${searchQuery}" oninput="handleSearch(event)" placeholder="Cari aplikasi (Netflix, Canva, Spotify...)" class="w-full pl-12 pr-10 py-4 rounded-2xl bg-dark-800 border border-dark-600 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 text-sm sm:text-base shadow-xl">
+                            ${searchQuery ? `
+                                <button onclick="clearSearch()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white">
+                                    <i data-lucide="x" class="w-5 h-5"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Content Area -->
+                <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+                    
+                    <!-- Categories Tabs -->
+                    <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
+                        ${categories.map(cat => `
+                            <button onclick="selectCategory('${cat}')" class="px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition-all flex items-center gap-2 ${selectedCategory === cat ? 'purple-gradient text-white font-semibold shadow-lg shadow-purple-600/25' : 'bg-dark-800 text-gray-400 hover:text-white border border-dark-700'}">
+                                ${cat}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <!-- Apps Grid -->
+                    ${apps.length === 0 ? `
+                        <div class="text-center py-20 glass-panel rounded-3xl">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-700 flex items-center justify-center text-purple-400">
+                                <i data-lucide="package-search" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Aplikasi Tidak Ditemukan</h3>
+                            <p class="text-gray-400 text-sm mb-6">Coba kata kunci lain atau pilih kategori berbeda.</p>
+                            <button onclick="resetHomeFilter()" class="px-5 py-2.5 rounded-xl purple-gradient text-white font-semibold text-sm">Reset Filter</button>
+                        </div>
+                    ` : `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            ${apps.map(app => {
+                                const minPrice = app.packages && app.packages.length > 0 ? Math.min(...app.packages.map(p => p.price)) : 0;
+                                return `
+                                    <div onclick="navigate('detail', '${app.id}')" class="glass-panel rounded-3xl p-6 flex flex-col justify-between cursor-pointer group hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-600/10 hover:-translate-y-1 relative overflow-hidden">
+                                        ${app.badge ? `
+                                            <div class="absolute top-4 right-4">
+                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                                    ${app.badge}
+                                                </span>
+                                            </div>
+                                        ` : ''}
+
+                                        <div>
+                                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${app.iconBg || 'from-purple-600 to-indigo-900'} flex items-center justify-center text-3xl mb-4 shadow-lg shadow-purple-600/20 group-hover:scale-110 transition-transform">
+                                                ${app.logo || '📱'}
+                                            </div>
+
+                                            <span class="text-[11px] font-semibold text-purple-400 uppercase tracking-wider block mb-1">${app.category}</span>
+                                            <h3 class="font-bold text-lg text-white group-hover:text-purple-300 transition-colors mb-2">${app.name}</h3>
+                                            <p class="text-gray-400 text-xs leading-relaxed line-clamp-2 mb-4">${app.description}</p>
+                                        </div>
+
+                                        <div class="pt-4 border-t border-dark-700 flex items-center justify-between">
+                                            <div>
+                                                <span class="text-[10px] text-gray-500 block">Mulai Dari</span>
+                                                <span class="font-extrabold text-white text-sm sm:text-base">${minPrice ? formatRupiah(minPrice) : 'Cek Detail'}</span>
+                                            </div>
+                                            <span class="w-9 h-9 rounded-xl bg-dark-800 group-hover:bg-purple-600 text-gray-300 group-hover:text-white flex items-center justify-center transition-colors">
+                                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `}
+                </main>
+
+                <!-- Footer -->
+                <footer class="bg-dark-800 border-t border-dark-700 mt-20 py-10">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl purple-gradient flex items-center justify-center text-xl">
+                                ${store.logo || '👑'}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">${store.name}</h4>
+                                <p class="text-xs text-gray-400">Pricelist Digital Resmi & Terpercaya.</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            Terakhir diperbarui: <span class="text-gray-300">${formatDate(store.lastUpdated)}</span>
+                        </div>
+                    </div>
+                </footer>
+            `;
+        }
+
+        // --- 2. DETAIL VIEW (Halaman Detail Aplikasi & Paket Harga) ---
+        function renderDetailView(appId) {
+            const store = getStoreData();
+            const apps = getAppsData();
+            const app = apps.find(a => a.id === appId);
+
+            if (!app) {
+                return `
+                    <div class="min-h-screen flex items-center justify-center p-4 text-center">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white mb-2">Aplikasi Tidak Ditemukan</h2>
+                            <p class="text-gray-400 text-sm mb-6">Aplikasi yang Anda cari mungkin sudah dihapus atau tidak aktif.</p>
+                            <button onclick="navigate('home')" class="px-5 py-2.5 rounded-xl purple-gradient text-white font-semibold text-sm">Kembali ke Beranda</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <!-- Navbar Detail -->
+                <header class="sticky top-0 z-40 bg-dark-900/90 backdrop-blur-md border-b border-dark-700">
+                    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+                        <button onclick="navigate('home')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-gray-300 hover:text-white text-sm font-medium transition-all">
+                            <i data-lucide="arrow-left" class="w-4 h-4 text-purple-400"></i>
+                            Kembali ke Katalog
+                        </button>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="openContactModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl purple-gradient text-white text-sm font-semibold shadow-lg shadow-purple-600/20">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i> Tanya Admin
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-10 w-full">
+                    
+                    <!-- App Info Card -->
+                    <div class="glass-panel rounded-3xl p-6 sm:p-8 mb-8 relative overflow-hidden border border-purple-500/20">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br ${app.iconBg || 'from-purple-600 to-indigo-900'} flex items-center justify-center text-4xl sm:text-5xl shadow-xl shadow-purple-600/30 shrink-0">
+                                ${app.logo || '📱'}
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-center sm:justify-start gap-3 mb-2">
+                                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">${app.category}</span>
+                                    ${app.badge ? `<span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${app.badge}</span>` : ''}
+                                </div>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">${app.name}</h2>
+                                <p class="text-gray-300 text-sm sm:text-base leading-relaxed">${app.description}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Packages Section -->
+                    <div class="mb-6 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Daftar Paket Harga Resmi</h3>
+                            <p class="text-xs text-gray-400">Pilih paket durasi sesuai kebutuhan Anda.</p>
+                        </div>
+                        <span class="text-xs text-purple-400 font-semibold px-3 py-1 rounded-lg bg-dark-800 border border-dark-700">${app.packages?.length || 0} Pilihan Paket</span>
+                    </div>
+
+                    ${!app.packages || app.packages.length === 0 ? `
+                        <div class="text-center py-16 glass-panel rounded-3xl">
+                            <p class="text-gray-400 text-sm">Belum ada paket harga yang tersedia untuk aplikasi ini.</p>
+                        </div>
+                    ` : `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${app.packages.map(pkg => {
+                                const waMsg = encodeURIComponent(`Halo Admin, saya ingin memesan *${app.name}* - *${pkg.name}* (${formatRupiah(pkg.price)}). Mohon panduannya ya!`);
+                                const waLink = `https://wa.me/${store.whatsapp}?text=${waMsg}`;
+
+                                return `
+                                    <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between border border-dark-700 hover:border-purple-500/40 transition-all">
+                                        <div>
+                                            <div class="flex items-start justify-between gap-4 mb-3">
+                                                <h4 class="font-bold text-lg text-white">${pkg.name}</h4>
+                                                <div class="flex items-center gap-1">
+                                                    <button onclick="copyPkg('${app.name} - ${pkg.name}', ${pkg.price})" class="p-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-gray-400 hover:text-purple-300" title="Salin Info Paket">
+                                                        <i data-lucide="copy" class="w-4 h-4"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <p class="text-gray-400 text-xs mb-6">${pkg.desc || 'Garansi resmi & aktif full.'}</p>
+                                        </div>
+
+                                        <div class="pt-4 border-t border-dark-700 flex items-center justify-between gap-4">
+                                            <div>
+                                                <span class="text-[10px] text-gray-500 block">Harga Spesial</span>
+                                                <div class="flex items-baseline gap-2">
+                                                    <span class="text-xl sm:text-2xl font-extrabold text-white">${formatRupiah(pkg.price)}</span>
+                                                    ${pkg.originalPrice && pkg.originalPrice > pkg.price ? `
+                                                        <span class="text-xs text-gray-500 line-through">${formatRupiah(pkg.originalPrice)}</span>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                            <a href="${waLink}" target="_blank" class="px-5 py-3 rounded-xl purple-gradient text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-purple-600/20 hover:opacity-95 shrink-0">
+                                                <i data-lucide="message-circle" class="w-4 h-4 fill-white"></i> Pesan
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `}
+                </main>
+            `;
+        }
+
+        // --- 3. ADMIN LOGIN VIEW ---
+        function renderAdminLoginView() {
+            return `
+                <div class="min-h-screen flex items-center justify-center px-4 relative bg-dark-900">
+                    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+                    
+                    <div class="glass-panel w-full max-w-md p-8 rounded-3xl shadow-2xl relative z-10 border border-purple-500/30">
+                        <div class="text-center mb-8">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl purple-gradient flex items-center justify-center text-3xl shadow-xl shadow-purple-600/30">
+                                🔐
+                            </div>
+                            <h2 class="text-2xl font-extrabold text-white">Admin Dashboard</h2>
+                            <p class="text-xs text-gray-400 mt-1">Masukkan password admin untuk mengelola katalog aplikasi.</p>
+                        </div>
+
+                        <form onsubmit="handleAdminLogin(event)" class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Password Admin</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                                        <i data-lucide="lock" class="w-5 h-5 text-purple-400"></i>
+                                    </div>
+                                    <input type="password" id="admin-password" placeholder="••••••••" required class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-dark-800 border border-dark-600 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 text-sm">
+                                </div>
+                                <p class="text-[11px] text-gray-500 mt-2">Password default: <code class="text-purple-400 font-mono">admin123</code></p>
+                            </div>
+
+                            <button type="submit" class="w-full py-3.5 rounded-xl purple-gradient text-white font-bold text-sm shadow-lg shadow-purple-600/30 hover:opacity-95 transition-all">
+                                Masuk Dashboard
+                            </button>
+                        </form>
+
+                        <div class="mt-6 text-center">
+                            <button onclick="navigate('home')" class="text-xs text-gray-400 hover:text-purple-400 transition-colors flex items-center justify-center gap-1.5 mx-auto">
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Beranda Katalog
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 4. ADMIN DASHBOARD VIEW ---
+        function renderAdminDashboardView() {
+            const store = getStoreData();
+            const apps = getAppsData();
+
+            return `
+                <div class="min-h-screen flex flex-col bg-dark-900">
+                    <!-- Admin Header -->
+                    <header class="bg-dark-800 border-b border-dark-700 sticky top-0 z-40">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl purple-gradient flex items-center justify-center text-xl">
+                                    ${store.logo || '👑'}
+                                </div>
+                                <div>
+                                    <h1 class="font-bold text-white text-base">Admin Panel</h1>
+                                    <p class="text-xs text-purple-400">${store.name}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <button onclick="navigate('home')" class="px-4 py-2 rounded-xl bg-dark-700 hover:bg-dark-600 text-gray-300 text-sm font-medium transition-all flex items-center gap-2">
+                                    <i data-lucide="eye" class="w-4 h-4 text-purple-400"></i> Lihat Web
+                                </button>
+                                <button onclick="handleAdminLogout()" class="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-medium transition-all flex items-center gap-2">
+                                    <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+                        
+                        <!-- Tabs -->
+                        <div class="flex items-center gap-3 border-b border-dark-700 pb-4 mb-8">
+                            <button onclick="setAdminTab('apps')" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${adminTab === 'apps' ? 'purple-gradient text-white shadow-lg shadow-purple-600/25' : 'bg-dark-800 text-gray-400 hover:text-white border border-dark-700'}">
+                                <i data-lucide="package" class="w-4 h-4"></i> Kelola Aplikasi (${apps.length})
+                            </button>
+                            <button onclick="setAdminTab('settings')" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${adminTab === 'settings' ? 'purple-gradient text-white shadow-lg shadow-purple-600/25' : 'bg-dark-800 text-gray-400 hover:text-white border border-dark-700'}">
+                                <i data-lucide="settings" class="w-4 h-4"></i> Pengaturan Toko
+                            </button>
+                        </div>
+
+                        <!-- APPS TAB -->
+                        ${adminTab === 'apps' ? `
+                            <div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">Daftar Aplikasi & Paket Harga</h3>
+                                        <p class="text-xs text-gray-400">Tambah aplikasi, atur paket harga spesifik, ubah status, atau hapus.</p>
+                                    </div>
+                                    <button onclick="openAppModal()" class="px-5 py-3 rounded-xl purple-gradient text-white font-bold text-sm shadow-lg shadow-purple-600/30 flex items-center gap-2 hover:opacity-95">
+                                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Tambah Aplikasi Baru
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-6">
+                                    ${apps.sort((a,b) => a.order - b.order).map(app => `
+                                        <div class="glass-panel rounded-3xl p-6 border border-dark-700">
+                                            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-dark-700">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${app.iconBg || 'from-purple-600 to-indigo-900'} flex items-center justify-center text-3xl shadow-lg shrink-0">
+                                                        ${app.logo || '📱'}
+                                                    </div>
+                                                    <div>
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <span class="text-xs font-mono text-purple-400 font-bold">#${app.order}</span>
+                                                            <span class="text-xs px-2.5 py-0.5 rounded-full bg-dark-700 text-gray-300">${app.category}</span>
+                                                            ${app.badge ? `<span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300">${app.badge}</span>` : ''}
+                                                        </div>
+                                                        <h4 class="font-bold text-lg text-white">${app.name}</h4>
+                                                        <p class="text-xs text-gray-400">${app.description}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                                                    <button onclick="toggleAppStatus('${app.id}')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold ${app.isActive ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}">
+                                                        ${app.isActive ? 'Aktif' : 'Nonaktif'}
+                                                    </button>
+                                                    <button onclick="openAppModal('${app.id}')" class="px-3.5 py-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-gray-200 hover:text-purple-300 text-xs font-semibold flex items-center gap-1.5">
+                                                        <i data-lucide="edit-3" class="w-4 h-4"></i> Edit App
+                                                    </button>
+                                                    <button onclick="openPackagesManager('${app.id}')" class="px-3.5 py-2 rounded-xl purple-gradient text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-purple-600/20">
+                                                        <i data-lucide="list" class="w-4 h-4"></i> Kelola Paket (${app.packages?.length || 0})
+                                                    </button>
+                                                    <button onclick="deleteApp('${app.id}')" class="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400" title="Hapus Aplikasi">
+                                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Preview Packages Chips -->
+                                            <div class="pt-4 flex flex-wrap items-center gap-2">
+                                                <span class="text-xs text-gray-500 font-medium">Paket Tersedia:</span>
+                                                ${!app.packages || app.packages.length === 0 ? '<span class="text-xs text-gray-600 italic">Belum ada paket</span>' : app.packages.map(p => `
+                                                    <span class="px-3 py-1.5 rounded-xl bg-dark-800 border border-dark-700 text-xs flex items-center gap-2">
+                                                        <strong class="text-white">${p.name}</strong>
+                                                        <span class="text-purple-400 font-bold">${formatRupiah(p.price)}</span>
+                                                    </span>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <!-- SETTINGS TAB -->
+                        ${adminTab === 'settings' ? `
+                            <div class="max-w-2xl mx-auto">
+                                <div class="glass-panel p-8 rounded-3xl border border-dark-700 shadow-xl">
+                                    <h3 class="text-xl font-bold text-white mb-2">Pengaturan Toko & WhatsApp</h3>
+                                    <p class="text-xs text-gray-400 mb-6">Ubah identitas toko dan nomor WhatsApp tujuan pemesanan.</p>
+
+                                    <form onsubmit="handleSaveSettings(event)" class="space-y-5">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-2">Nama Toko</label>
+                                            <input type="text" id="set-name" value="${store.name}" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-2">Tagline</label>
+                                            <input type="text" id="set-tagline" value="${store.tagline}" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-2">Nomor WhatsApp (Tanpa 0 di depan, contoh: 62812...)</label>
+                                            <input type="text" id="set-wa" value="${store.whatsapp}" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm font-mono focus:outline-none focus:border-purple-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-2">Logo Toko (Emoji)</label>
+                                            <input type="text" id="set-logo" value="${store.logo}" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                                        </div>
+
+                                        <div class="pt-4 border-t border-dark-700 flex justify-end">
+                                            <button type="submit" class="px-6 py-3 rounded-xl purple-gradient text-white font-bold text-sm shadow-lg shadow-purple-600/30">
+                                                Simpan Pengaturan
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                    </main>
+                </div>
+            `;
+        }
+
+        // --- INTERACTIVITY & HANDLERS ---
+        function handleSearch(e) {
+            searchQuery = e.target.value;
+            const root = document.getElementById('app');
+            root.innerHTML = renderHomeView();
+            lucide.createIcons();
+            const input = document.getElementById('search-input');
+            if (input) {
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+            }
+        }
+
+        function clearSearch() {
+            searchQuery = '';
+            render();
+        }
+
+        function selectCategory(cat) {
+            selectedCategory = cat;
+            render();
+        }
+
+        function resetHomeFilter() {
+            searchQuery = '';
+            selectedCategory = 'Semua';
+            render();
+        }
+
+        function setAdminTab(tab) {
+            adminTab = tab;
+            render();
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('admin-password').value;
+            if (pass === 'admin123') {
+                isAdminLoggedIn = true;
+                localStorage.setItem('luxe_admin_auth', 'true');
+                showToast('Login admin berhasil!', 'success');
+                navigate('admin-dashboard');
+            } else {
+                showToast('Password salah! Gunakan admin123', 'error');
+            }
+        }
+
+        function handleAdminLogout() {
+            isAdminLoggedIn = false;
+            localStorage.removeItem('luxe_admin_auth');
+            showToast('Berhasil logout', 'success');
+            navigate('home');
+        }
+
+        function toggleAppStatus(id) {
+            let apps = getAppsData();
+            apps = apps.map(a => {
+                if (a.id === id) a.isActive = !a.isActive;
+                return a;
+            });
+            saveAppsData(apps);
+            showToast('Status aplikasi diperbarui', 'success');
+            render();
+        }
+
+        function deleteApp(id) {
+            if (confirm('Yakin ingin menghapus aplikasi ini beserta seluruh paket harganya?')) {
+                let apps = getAppsData().filter(a => a.id !== id);
+                saveAppsData(apps);
+                showToast('Aplikasi berhasil dihapus', 'success');
+                render();
+            }
+        }
+
+        function copyPkg(title, price) {
+            const text = `Paket ${title}: ${formatRupiah(price)}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast('Harga paket disalin!', 'success'));
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Harga paket disalin!', 'success');
+            }
+        }
+
+        // --- MODALS ---
+        function openModal(html) {
+            const container = document.getElementById('modal-container');
+            container.innerHTML = `
+                <div class="glass-panel w-full max-w-xl p-6 sm:p-8 rounded-3xl border border-purple-500/30 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                    <button onclick="closeModal()" class="absolute top-5 right-5 p-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-gray-400 hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                    ${html}
+                </div>
+            `;
+            container.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            const container = document.getElementById('modal-container');
+            container.classList.add('hidden');
+            container.innerHTML = '';
+        }
+
+        function openContactModal() {
+            const store = getStoreData();
+            const waUrl = `https://wa.me/${store.whatsapp}?text=Halo%20Admin,%20saya%20ingin%20bertanya%20mengenai%20pricelist%20aplikasi.`;
+            openModal(`
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl purple-gradient flex items-center justify-center text-3xl shadow-xl shadow-purple-600/30">
+                        ${store.logo || '👑'}
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-1">${store.name}</h3>
+                    <p class="text-xs text-gray-400 mb-6">${store.tagline}</p>
+                    
+                    <div class="bg-dark-800 p-4 rounded-2xl border border-dark-700 text-left mb-6 space-y-3">
+                        <div class="flex items-center gap-3 text-sm">
+                            <i data-lucide="message-circle" class="w-5 h-5 text-purple-400 shrink-0"></i>
+                            <div>
+                                <span class="text-xs text-gray-500 block">WhatsApp Admin</span>
+                                <span class="font-bold text-white">+${store.whatsapp}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="${waUrl}" target="_blank" class="w-full py-3.5 px-4 rounded-2xl purple-gradient text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30">
+                        <i data-lucide="message-circle" class="w-5 h-5 fill-white"></i> Chat WhatsApp Sekarang
+                    </a>
+                </div>
+            `);
+        }
+
+        function openAppModal(appId = null) {
+            const apps = getAppsData();
+            const app = appId ? apps.find(a => a.id === appId) : {
+                id: '', name: '', category: 'Streaming', logo: '📱', iconBg: 'from-purple-600 to-indigo-900', badge: '', description: '', order: apps.length + 1, packages: []
+            };
+
+            openModal(`
+                <h3 class="text-xl font-bold text-white mb-4">${appId ? 'Edit Aplikasi' : 'Tambah Aplikasi Baru'}</h3>
+                <form onsubmit="handleSaveApp(event, '${appId || ''}')" class="space-y-4">
+                    ${!appId ? `
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">ID Aplikasi (Huruf kecil tanpa spasi, cth: netflix)</label>
+                            <input type="text" id="app-id-input" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500 font-mono">
+                        </div>
+                    ` : ''}
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Nama Aplikasi</label>
+                        <input type="text" id="app-name" value="${app.name}" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Kategori</label>
+                            <input type="text" id="app-category" value="${app.category}" required placeholder="Streaming / Design" class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Badge (Opsional)</label>
+                            <input type="text" id="app-badge" value="${app.badge || ''}" placeholder="BEST SELLER / PROMO" class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Logo (Emoji)</label>
+                            <input type="text" id="app-logo" value="${app.logo}" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Urutan</label>
+                            <input type="number" id="app-order" value="${app.order || 1}" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500 font-mono">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Deskripsi Singkat</label>
+                        <textarea id="app-desc" rows="3" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">${app.description}</textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t border-dark-700">
+                        <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl bg-dark-800 text-gray-300 text-sm font-medium">Batal</button>
+                        <button type="submit" class="px-6 py-2.5 rounded-xl purple-gradient text-white font-bold text-sm shadow-lg shadow-purple-600/30">Simpan Aplikasi</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function handleSaveApp(e, appId) {
+            e.preventDefault();
+            let apps = getAppsData();
+            const name = document.getElementById('app-name').value;
+            const category = document.getElementById('app-category').value;
+            const badge = document.getElementById('app-badge').value;
+            const logo = document.getElementById('app-logo').value;
+            const description = document.getElementById('app-desc').value;
+            const order = Number(document.getElementById('app-order').value);
+
+            if (appId) {
+                apps = apps.map(a => a.id === appId ? { ...a, name, category, badge, logo, description, order } : a);
+            } else {
+                const id = document.getElementById('app-id-input').value.trim().toLowerCase().replace(/\s+/g, '-');
+                if (apps.some(a => a.id === id)) {
+                    showToast('ID Aplikasi sudah digunakan!', 'error');
+                    return;
+                }
+                apps.push({
+                    id, name, category, badge, logo, description, order,
+                    iconBg: 'from-purple-600 to-indigo-900',
+                    isActive: true,
+                    packages: []
+                });
+            }
+
+            saveAppsData(apps);
+            const store = getStoreData();
+            saveStoreData(store);
+            closeModal();
+            showToast('Aplikasi berhasil disimpan!', 'success');
+            render();
+        }
+
+        // --- PACKAGES MANAGER MODAL ---
+        function openPackagesManager(appId) {
+            const apps = getAppsData();
+            const app = apps.find(a => a.id === appId);
+
+            openModal(`
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-dark-700">
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Kelola Paket: ${app.name}</h3>
+                        <p class="text-xs text-gray-400">Tambah atau hapus paket harga spesifik aplikasi ini.</p>
+                    </div>
+                    <button onclick="openPackageFormModal('${appId}')" class="px-4 py-2 rounded-xl purple-gradient text-white font-bold text-xs shadow-md flex items-center gap-1.5">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Tambah Paket
+                    </button>
+                </div>
+
+                <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                    ${!app.packages || app.packages.length === 0 ? `
+                        <div class="text-center py-10 bg-dark-800/50 rounded-2xl border border-dark-700">
+                            <p class="text-gray-400 text-xs">Belum ada paket harga. Klik tombol di atas untuk menambah.</p>
+                        </div>
+                    ` : app.packages.map(pkg => `
+                        <div class="glass-panel p-4 rounded-2xl flex items-center justify-between border border-dark-700">
+                            <div>
+                                <h4 class="font-bold text-white text-sm">${pkg.name}</h4>
+                                <div class="flex items-center gap-3 text-xs mt-1">
+                                    <span class="text-purple-400 font-bold">${formatRupiah(pkg.price)}</span>
+                                    ${pkg.originalPrice ? `<span class="text-gray-500 line-through">${formatRupiah(pkg.originalPrice)}</span>` : ''}
+                                </div>
+                                <p class="text-[11px] text-gray-400 mt-1">${pkg.desc || ''}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="deletePackage('${appId}', '${pkg.id}')" class="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `);
+        }
+
+        function openPackageFormModal(appId, pkgId = null) {
+            openModal(`
+                <h3 class="text-xl font-bold text-white mb-4">Tambah Paket Harga</h3>
+                <form onsubmit="handleSavePackage(event, '${appId}')" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Nama Paket / Durasi</label>
+                        <input type="text" id="pkg-name" required placeholder="Cth: 1 Bulan (1 User)" class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Harga Jual (Rp)</label>
+                            <input type="number" id="pkg-price" required class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm font-mono focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Harga Coret (Opsional)</label>
+                            <input type="number" id="pkg-orig" class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm font-mono focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 uppercase mb-1">Keterangan / Garansi</label>
+                        <input type="text" id="pkg-desc" placeholder="Cth: Garansi full 30 hari anti ngadat" class="w-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm focus:outline-none focus:border-purple-500">
+                    </div>
+                    <div class="flex justify-end gap-3 pt-4 border-t border-dark-700">
+                        <button type="button" onclick="openPackagesManager('${appId}')" class="px-5 py-2.5 rounded-xl bg-dark-800 text-gray-300 text-sm">Kembali</button>
+                        <button type="submit" class="px-6 py-2.5 rounded-xl purple-gradient text-white font-bold text-sm shadow-lg shadow-purple-600/30">Simpan Paket</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function handleSavePackage(e, appId) {
+            e.preventDefault();
+            let apps = getAppsData();
+            const name = document.getElementById('pkg-name').value;
+            const price = Number(document.getElementById('pkg-price').value);
+            const originalPrice = Number(document.getElementById('pkg-orig').value) || 0;
+            const desc = document.getElementById('pkg-desc').value;
+
+            apps = apps.map(a => {
+                if (a.id === appId) {
+                    if (!a.packages) a.packages = [];
+                    a.packages.push({
+                        id: 'pkg-' + Date.now(),
+                        name, price, originalPrice, desc
+                    });
+                }
+                return a;
+            });
+
+            saveAppsData(apps);
+            const store = getStoreData();
+            saveStoreData(store);
+            showToast('Paket berhasil ditambahkan!', 'success');
+            openPackagesManager(appId);
+        }
+
+        function deletePackage(appId, pkgId) {
+            if (confirm('Yakin ingin menghapus paket harga ini?')) {
+                let apps = getAppsData();
+                apps = apps.map(a => {
+                    if (a.id === appId) {
+                        a.packages = a.packages.filter(p => p.id !== pkgId);
+                    }
+                    return a;
+                });
+                saveAppsData(apps);
+                showToast('Paket berhasil dihapus', 'success');
+                openPackagesManager(appId);
+            }
+        }
+
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            let store = getStoreData();
+            store.name = document.getElementById('set-name').value;
+            store.tagline = document.getElementById('set-tagline').value;
+            store.whatsapp = document.getElementById('set-wa').value.replace(/[^0-9]/g, '');
+            store.logo = document.getElementById('set-logo').value;
+
+            saveStoreData(store);
+            showToast('Pengaturan toko diperbarui!', 'success');
+            render();
+        }
+
+        // --- INIT ---
+        window.onload = function() {
+            if (!localStorage.getItem('luxe_store_v2')) saveStoreData(DEFAULT_STORE);
+            if (!localStorage.getItem('luxe_apps_v2')) saveAppsData(DEFAULT_APPS);
+            render();
+        }
+    </script>
+</body>
+</html>
